@@ -6,9 +6,11 @@ import random
 pygame.mixer.init()
 pygame.init()
 
+#музыка
 pygame.mixer.music.load('data/c245b81d72ab0bb.wav')
 pygame.mixer.music.play(-1)
 
+#загрузка картинок
 def load_image(name):
     fullname = os.path.join('data', name)
     image = pygame.image.load(fullname).convert()
@@ -40,6 +42,7 @@ transportC = None
 screen = pygame.display.set_mode(size)
 all_sprites = pygame.sprite.Group()
 
+#класс игрока
 class Player(pygame.sprite.Sprite):
     image1_down = load_image('war1_down.png')
     image2_down = load_image('war2_down.png')
@@ -82,6 +85,7 @@ class Player(pygame.sprite.Sprite):
         self.armor = armor
         self.life = life
         self.money = money
+        #движение персонажа
         if running_sprite == True:
             hpx, hpy = self.rect.x, self.rect.y
             self.tik += 1
@@ -140,6 +144,7 @@ class Player(pygame.sprite.Sprite):
                 elif go_fast == 0:
                     self.rect.x += 1
             
+            #проверка выхода за пределы поля
             if self.rect.x < -32:
                 transportC = 'l'
                 self.rect.x = width - 1
@@ -161,6 +166,7 @@ class Player(pygame.sprite.Sprite):
                 lvl += 1
                 fGreen = (105, random.randrange(150, 255, 15), 105)
             
+            #надписи состояния
             a1 = pygame.font.Font(None, 25)
             b1 = a1.render(f'Level: {self.lvl}', 1, RED)
             xt1 = 700
@@ -195,6 +201,7 @@ class Player(pygame.sprite.Sprite):
                 transportC = None
                 next_l = 0
                 
+        #проверка на проигрыш
         if life <= 0:
             attack = None
             running_sprite = False
@@ -204,6 +211,7 @@ class Player(pygame.sprite.Sprite):
             yt0 = 510
             screen.blit(b0, (xt0, yt0))
         
+        #проверка на выигрыш
         if lvl == 21 and money >= 40:
             running_sprite = False
             ag = pygame.font.Font(None, 50)
@@ -219,6 +227,7 @@ class Player(pygame.sprite.Sprite):
             ytq = 510
             screen.blit(bq, (xtq, ytq))
 
+#класс сундука
 class Chest(pygame.sprite.Sprite):
     image1 = load_image('chest1.png')
 
@@ -240,6 +249,7 @@ class Chest(pygame.sprite.Sprite):
         global x, u
         if running_sprite == True:
             blocks_hit_list = pygame.sprite.spritecollide(self, all_sprites, False)
+            #сбор вещей из сундука
             if len(blocks_hit_list) > 1:
                 if '[<Player sprite(in 1 groups)>, <Chest sprite(in 1 groups)>]' == str(blocks_hit_list):
                     self.rect.x = -1000
@@ -340,6 +350,7 @@ class Chest(pygame.sprite.Sprite):
                 next_l += 1
             
         
+#класс врагов
 class Skeletron(pygame.sprite.Sprite):
     image1_down = load_image('skel1_down.png')
     image2_down = load_image('skel2_down.png')
@@ -395,6 +406,7 @@ class Skeletron(pygame.sprite.Sprite):
             self.tik += 1
             if self.tik == 41:
                 self.tik = 0
+            #передвижение
             if (self.rect.x - 250 < hpx < self.rect.x + 250 and self.rect.y - 250 < hpy < self.rect.y + 250) and self.k == 0:
                 if hpx > self.rect.x:
                     self.rect.x += 1
@@ -422,6 +434,7 @@ class Skeletron(pygame.sprite.Sprite):
                         self.image = Skeletron.image3_up
             elif self.k == 1:
                 attack = 'skel'
+                #атака
                 if attack == 'skel':
                     if self.life <= 0:
                         self.rect.x = 3000
@@ -486,6 +499,7 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        #реакция на нажатие клавиш
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_w:
                 go_up = 1
